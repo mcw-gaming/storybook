@@ -1,0 +1,74 @@
+#qte-button {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 10rem;
+  height: 10rem;
+  background: #000;
+}
+
+#qte-button:hover {
+  background: #101010;
+}
+
+#qte-circle {
+  width: 10rem;
+  height: 10rem;
+  border-radius: 50%;
+  position: absolute;
+  top: 75%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background-color: #c0c0c0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 1.5rem 3rem rgba(0,0,0,0.3), 0 0 0 0.2rem #000;
+
+  transition: transform 0.5s cubic-bezier(1, 0, 0, 1), opacity 0.5s cubic-bezier(1, 0, 0, 1), background 0.5s cubic-bezier(1, 0, 0, 1), visibility 0.5s;
+  visibility: hidden;
+  opacity: 0;
+  transform: translate(-50%, -50%) scale(1.25);
+}
+
+#qte-circle.visible {
+  visibility: visible;
+  opacity: 1;
+  transform: translate(-50%, -50%);
+}
+
+#qte-circle.success {
+  background-color: #40a060;
+}
+
+#qte-circle.failed {
+  background-color: #c00040;
+}
+
+#qte-circle .icon {
+  font-size: 30px;
+  color: #000;
+}
+
+#qte-circle .button {
+  position: absolute;
+  left: 1.5rem;
+  top: 1rem;
+  width: calc(100% - 3rem);
+  height: calc(100% - 3rem);
+  background: #fff;
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 4rem;
+  box-shadow: 0 0.5rem 0 #858585, 0 0 0 0.2rem #000;
+  font-weight: bold;
+  transition: all 0.1s ease;
+}
+
+#qte-circle.active .button {
+  transition: none;
+  top: 1.5rem;
+  box-shadow: 0 0 0 0.2rem #000;
+}

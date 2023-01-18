@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Storybook</title>
+  <link rel="stylesheet" href="source/index.css">
+  <link rel="stylesheet" href="source/choices.css">
+  <link rel="stylesheet" href="source/qte.css">
+</head>
+<body>
+  <canvas id="viewport"></canvas>
+  <div id="gui">
+    <div id="qte-button"></div>
+    <div id="qte-circle">
+      <i class="icon"></i>
+      <div class="button"></div>
+    </div>
+    <div id="notification">
+      <div class="text"></div>
+    </div>
+    <div id="subtitle"></div>
+    <div id="hud-info">
+      <div class="character"></div>
+      <div class="time"></div>
+      <div class="progress"></div>
+    </div>
+    <div id="choice-container">
+      <div class="choices"></div>
+      <div id="timer-progress-bar"></div>
+    </div>
+  </div>
+  <script src="library/three.js"></script>
+  <script src="library/EffectComposer.js"></script>
+  <script src="library/ShaderPass.js"></script>
+  <script src="library/CopyShader.js"></script>
+  <script src="library/RenderPass.js"></script>
+  <script src="library/UnrealBloomPass.js"></script>
+  <script src="library/LuminosityHighPassShader.js"></script>
+  <script src="library/GLTFLoader.js"></script>
+  <script src="source/index.js"></script>
+  <script src="source/test.js"></script>
+</body>
+</html>
