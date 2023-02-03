@@ -14,7 +14,7 @@
   };
 
   settingsButton.onclick = () => {
-    flyTo({ x: 200, y: 20, z: 10 }, { x: THREE.MathUtils.degToRad(-25), y: THREE.MathUtils.degToRad(-25), z: 0 }, 1000);
+    flyTo({ x: 120, y: 2, z: -100 }, { x: 0, y: THREE.MathUtils.degToRad(-25), z: 0 }, 1000);
     openInGameUi("settings-menu");
   };
 

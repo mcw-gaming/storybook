@@ -1,12 +1,6 @@
 *,
 ::placeholder {
   font-family: 'Readex Pro';
-  text-shadow: 1px 0 0 currentColor;
-}
-
-html[lang="ar"] *,
-html[lang="ar"] ::placeholder {
-  font-family: 'Jali Arabic';
 }
 
 html, body {
@@ -22,4 +16,29 @@ html, body {
   height: 100%;
   overflow: hidden;
   direction: ltr;
+}
+
+#viewport {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(to bottom, #6a6a6a, #a6a6a6);
+}
+
+#gui {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.game-ui {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
 }

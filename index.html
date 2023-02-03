@@ -5,19 +5,30 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Storybook</title>
-  <link rel="stylesheet" href="source/index.css">
-  <link rel="stylesheet" href="source/choices.css">
-  <link rel="stylesheet" href="source/qte.css">
   <link rel="stylesheet" href="style/main.css">
-  <link rel="stylesheet" href="style/main_menu.css">
+  <link rel="stylesheet" href="style/hud.css">
+  <link rel="stylesheet" href="style/choices.css">
+  <link rel="stylesheet" href="style/qte.css">
+  <link rel="stylesheet" href="style/button_menu.css">
   <link rel="stylesheet" href="style/episodes_menu.css">
-  <link rel="stylesheet" href="style/settings_menu.css">
   <link rel="stylesheet" href="style/exit_game.css">
+  <link rel="stylesheet" href="style/splashscreen.css">
+  <script src="library/three.js"></script>
+  <script src="library/EffectComposer.js"></script>
+  <script src="library/ShaderPass.js"></script>
+  <script src="library/CopyShader.js"></script>
+  <script src="library/RenderPass.js"></script>
+  <script src="library/UnrealBloomPass.js"></script>
+  <script src="library/LuminosityHighPassShader.js"></script>
+  <script src="library/GLTFLoader.js"></script>
+  <script defer src="js/index.js"></script>
+  <script defer src="js/test.js"></script>
   <script defer src="js/game_ui.js"></script>
   <script defer src="js/main_menu.js"></script>
   <script defer src="js/episodes_menu.js"></script>
   <script defer src="js/settings_menu.js"></script>
   <script defer src="js/exit_game.js"></script>
+  <script defer src="js/splashscreen.js"></script>
 
   <!-- Localization -->
   <script src="js/l10n.js"></script>
@@ -28,30 +39,39 @@
 <body>
   <canvas id="viewport"></canvas>
   <div id="gui">
-    <div id="qte-circle">
-      <svg id="qte-timer" viewBox="0 0 36 36">
-        <circle id="qte-timer-track" cx="18" cy="18" r="15" fill="none" stroke="#404040" stroke-width="6" />
-        <circle id="qte-timer-fill" cx="18" cy="18" r="15" fill="none" stroke="#e0e0e0" stroke-width="6" />
-      </svg>
-      <div class="button"></div>
+    <div id="splashscreen"></div>
+
+    <div id="hud" class="game-ui">
+      <div id="qte-circle">
+        <svg id="qte-timer" viewBox="0 0 36 36">
+          <circle id="qte-timer-track" cx="18" cy="18" r="15" fill="none" stroke="#404040" stroke-width="6" />
+          <circle id="qte-timer-fill" cx="18" cy="18" r="15" fill="none" stroke="#e0e0e0" stroke-width="6" />
+        </svg>
+        <div class="button"></div>
+      </div>
+      <div id="notification">
+        <div class="text"></div>
+      </div>
+      <div id="subtitle"></div>
+      <div id="hud-info">
+        <div class="character"></div>
+        <div class="time"></div>
+        <div class="progress"></div>
+      </div>
+      <div id="choice-container">
+        <div class="choices"></div>
+        <div id="timer-progress-bar"></div>
+      </div>
     </div>
-    <div id="notification">
-      <div class="text"></div>
-    </div>
-    <div id="subtitle"></div>
-    <div id="hud-info">
-      <div class="character"></div>
-      <div class="time"></div>
-      <div class="progress"></div>
-    </div>
-    <div id="choice-container">
-      <div class="choices"></div>
-      <div id="timer-progress-bar"></div>
+
+    <div id="loading-screen">
+      <div class="loading-icon"></div>
+      <div id="loading-screen-progress"></div>
     </div>
 
     <!-- User Interface -->
-    <div id="main-menu" class="game-ui">
-      <menu class="main-menu-options">
+    <div id="main-menu" class="game-ui button-menu">
+      <menu class="options">
         <button id="main-menu-play-button" data-l10n-id="mainMenu-play">Play</button>
         <button id="main-menu-cosmetics-button" data-l10n-id="mainMenu-cosmetics">Cosmetics</button>
         <button id="main-menu-extras-button" data-l10n-id="mainMenu-extras" class="attention">Extras</button>
@@ -108,8 +128,8 @@
       </ul>
     </div>
 
-    <div id="settings-menu" class="game-ui">
-      <menu class="settings-menu-options">
+    <div id="settings-menu" class="game-ui button-menu">
+      <menu class="options">
         <button id="settings-menu-back-button" data-l10n-id="goBack">Go Back</button>
         <button id="settings-menu-audio-button" data-l10n-id="settings-audio">Audio &amp; Music</button>
         <button id="settings-menu-vsuals-button" data-l10n-id="settings-vsuals">Visuals &amp; Graphics</button>
@@ -131,15 +151,5 @@
       </div>
     </div>
   </div>
-  <script src="library/three.js"></script>
-  <script src="library/EffectComposer.js"></script>
-  <script src="library/ShaderPass.js"></script>
-  <script src="library/CopyShader.js"></script>
-  <script src="library/RenderPass.js"></script>
-  <script src="library/UnrealBloomPass.js"></script>
-  <script src="library/LuminosityHighPassShader.js"></script>
-  <script src="library/GLTFLoader.js"></script>
-  <script src="source/index.js"></script>
-  <script src="source/test.js"></script>
 </body>
 </html>

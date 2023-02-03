@@ -49,6 +49,7 @@ var qteCircle = document.getElementById("qte-circle");
 var qteCircleKey = qteCircle.querySelector(".button");
 var SOUND_QTE_WARN = new Audio("/resources/qte_warn.wav");
 var SOUND_QTE_FAIL = new Audio("/resources/qte_fail.mp3");
+var SOUND_CAMERA_WHOOSH = new Audio("/resources/whoosh.wav");
 var sunlight = new THREE.DirectionalLight(0xffe0c0, 1.0);
 var motionBlurPass = new THREE.UnrealBloomPass(
   new THREE.Vector2(window.innerWidth, window.innerHeight),
@@ -101,6 +102,7 @@ var qteTimerFill = document.getElementById("qte-timer-fill");
 var speed = 0.75;
 var skyColor = 0x212325;
 var isInGamePlaying = false;
+var keyboardControlFlags = {};
 
 // Set up the bloom
 motionBlurPass.exposure = 2;
@@ -146,7 +148,13 @@ mapLoader.load("resources/maps/apocalyptic_city/scene.gltf", function (geometry)
   mapModel.scale.x = 0.5;
   mapModel.scale.y = 0.5;
   mapModel.scale.z = 0.5;
-  // mapModel.add(new THREE.Box3Helper(mapModel.geometry.boundingBox));
+
+  var box = new THREE.Box3();
+
+  // Pass the geometry to the Box3 object
+  box.setFromObject(mapModel);
+
+  mapModel.add(new THREE.Box3Helper(box));
   scene.add(mapModel);
 });
 
@@ -160,14 +168,14 @@ sunlight.shadow.camera.far = 500;
 scene.add(sunlight);
 
 // Add the fog
-scene.background = skyColor;
+scene.background = new THREE.Color( skyColor );
 scene.fog = new THREE.FogExp2(skyColor, 0.01);
 
 // Add the event listeners
 document.addEventListener("keydown", onKeyDown);
 document.addEventListener("keyup", onKeyUp);
 document.addEventListener("keydown", checkButtonPress);
-viewport.addEventListener("mousedown", onMouseDown, false);
+document.addEventListener("mousedown", onMouseDown, false);
 document.addEventListener("mousemove", onMouseMove, false);
 document.addEventListener("pointerlockchange", onPointerLockChange, false);
 document.addEventListener("pointerlockerror", onPointerLockError, false);
@@ -187,6 +195,31 @@ function render() {
   if (document.pointerLockElement !== viewport) {
     return;
   }
+
+  if (keyboardControlFlags["w"]) {
+    playerMovement.z = -1;
+  } else {
+    playerMovement.z = 0;
+  }
+
+  if (keyboardControlFlags["s"]) {
+    playerMovement.z = 1;
+  } else {
+    playerMovement.z = 0;
+  }
+
+  if (keyboardControlFlags["a"]) {
+    playerMovement.x = -1;
+  } else {
+    playerMovement.x = 0;
+  }
+
+  if (keyboardControlFlags["d"]) {
+    playerMovement.x = 1;
+  } else {
+    playerMovement.x = 0;
+  }
+
   camera.quaternion.setFromEuler(new THREE.Euler(pitch, yaw, 0, "YXZ"));
   playerModel[currentCharacterIndex].translateX(playerMovement.x * speed);
   playerModel[currentCharacterIndex].translateZ(playerMovement.z * speed);
@@ -619,6 +652,9 @@ function flyTo(position, rotation, duration) {
   var endRotation = rotation;
   var startTime = performance.now();
 
+  SOUND_CAMERA_WHOOSH.currentTime = 0;
+  SOUND_CAMERA_WHOOSH.play();
+
   function easeInOutQuad(t) {
     return t < 0.5 ? 2 * t * t : -1 + (4 - 2 * t) * t;
   }
@@ -642,7 +678,9 @@ function flyTo(position, rotation, duration) {
 }
 
 function onMouseDown() {
-  viewport.requestPointerLock();
+  if (isInGamePlaying) {
+    viewport.requestPointerLock();
+  }
 }
 
 function onMouseMove(event) {
@@ -670,48 +708,12 @@ function onPointerLockError() {
 
 // Create an onKeyDown function to update the player movement and camera rotation when a key is pressed
 function onKeyDown(event) {
-  switch (event.key) {
-    case "w":
-    case "ArrowUp":
-      playerMovement.z = -1;
-      break;
-    case "s":
-    case "ArrowDown":
-      playerMovement.z = 1;
-      break;
-    case "a":
-    case "ArrowLeft":
-      playerMovement.x = -1;
-      break;
-    case "d":
-    case "ArrowRight":
-      playerMovement.x = 1;
-      break;
-    case " ":
-      playerMovement.y = 1;
-      break;
-  }
+  keyboardControlFlags[event.key] = true;
 }
 
 // Create an onKeyUp function to update the player movement and camera rotation when a key is released
 function onKeyUp(event) {
-  switch (event.key) {
-    case "w":
-    case "ArrowUp":
-    case "s":
-    case "ArrowDown":
-      playerMovement.z = 0;
-      break;
-    case "a":
-    case "ArrowLeft":
-    case "d":
-    case "ArrowRight":
-      playerMovement.x = 0;
-      break;
-    case " ":
-      playerMovement.y = 0;
-      break;
-  }
+  keyboardControlFlags[event.key] = false;
 }
 
 window.addEventListener('resize', function() {

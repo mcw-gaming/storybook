@@ -1,18 +1,18 @@
-#main-menu {
+.button-menu {
   transition: all 0.5s cubic-bezier(0.2, 0.9, 0.1, 1);
   transform: translateX(3rem);
   opacity: 0;
   visibility: hidden;
 }
 
-#main-menu.visible {
+.button-menu.visible {
   transition: all 0.5s cubic-bezier(0.2, 0.9, 0.1, 1) 0.5s;
   transform: translateX(0);
   opacity: 1;
   visibility: visible;
 }
 
-.main-menu-options {
+.button-menu .options {
   position: absolute;
   top: 50%;
   left: 6.4rem;
@@ -20,7 +20,7 @@
   width: 32rem;
 }
 
-.main-menu-options button {
+.button-menu .options button {
   background: transparent;
   border: none;
   border-radius: 1rem;
@@ -35,21 +35,21 @@
   position: relative;
 }
 
-.main-menu-options button:hover,
-.main-menu-options button:focus {
+.button-menu .options button:hover,
+.button-menu .options button:focus {
   background: linear-gradient(to right, rgba(255,255,255,0.1), transparent);
 }
 
-.main-menu-options button:active {
+.button-menu .options button:active {
   background: linear-gradient(to right, rgba(255,255,255,0.2), transparent);
 }
 
-.main-menu-options button.attention:hover,
-.main-menu-options button.attention:focus {
+.button-menu .options button.attention:hover,
+.button-menu .options button.attention:focus {
   color: #ffc000;
 }
 
-.main-menu-options button.attention::before {
+.button-menu .options button.attention::before {
   content: '';
   position: absolute;
   left: 0;
@@ -74,7 +74,7 @@
   }
 }
 
-.main-menu-options button.attention::after {
+.button-menu .options button.attention::after {
   content: '';
   position: absolute;
   left: -4rem;
