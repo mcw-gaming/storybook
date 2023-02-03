@@ -47,9 +47,9 @@ var currentButton = 0;
 var QTEActive = false;
 var qteCircle = document.getElementById("qte-circle");
 var qteCircleKey = qteCircle.querySelector(".button");
-var SOUND_QTE_WARN = new Audio("/resources/qte_warn.wav");
-var SOUND_QTE_FAIL = new Audio("/resources/qte_fail.mp3");
-var SOUND_CAMERA_WHOOSH = new Audio("/resources/whoosh.wav");
+var SOUND_QTE_WARN = new Audio("resources/qte_warn.wav");
+var SOUND_QTE_FAIL = new Audio("resources/qte_fail.mp3");
+var SOUND_CAMERA_WHOOSH = new Audio("resources/whoosh.wav");
 var sunlight = new THREE.DirectionalLight(0xffe0c0, 1.0);
 var motionBlurPass = new THREE.UnrealBloomPass(
   new THREE.Vector2(window.innerWidth, window.innerHeight),
