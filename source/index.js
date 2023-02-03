@@ -1,9 +1,9 @@
 // Global Variables
-var viewport = document.getElementById('viewport');
-var mainScreen = document.getElementById('main-screen');
-var pauseMenu = document.getElementById('pause-menu');
-var notification = document.getElementById('notification');
-var notificationText = notification.querySelector('.text');
+var viewport = document.getElementById("viewport");
+var mainScreen = document.getElementById("main-screen");
+var pauseMenu = document.getElementById("pause-menu");
+var notification = document.getElementById("notification");
+var notificationText = notification.querySelector(".text");
 var playerModel = [];
 var mapModel;
 var renderer = new THREE.WebGLRenderer({
@@ -22,33 +22,33 @@ var camera = new THREE.PerspectiveCamera(
 var clock = new THREE.Clock();
 var characters = [
   {
-    name: 'Hank',
-    model: 'resources/characters/generic/model.gltf',
+    name: "Hank",
+    model: "resources/characters/generic/model.gltf",
     speed: 0.1,
     height: 1.8,
   },
   {
-    name: 'Sara',
-    model: 'resources/characters/generic/model.gltf',
+    name: "Sara",
+    model: "resources/characters/generic/model.gltf",
     speed: 0.15,
     height: 1.78,
   },
   {
-    name: 'Mike',
-    model: 'resources/characters/generic/model.gltf',
+    name: "Mike",
+    model: "resources/characters/generic/model.gltf",
     speed: 0.2,
     height: 1.93,
   },
 ];
 var currentCharacterIndex = 0;
 var characterMeshes = [];
-var buttonSequence = ['Q', 'T', 'E', 'G'];
+var buttonSequence = ["Q", "T", "E", "G"];
 var currentButton = 0;
 var QTEActive = false;
-var qteCircle = document.getElementById('qte-circle');
-var qteCircleKey = qteCircle.querySelector('.button');
-var SOUND_QTE_WARN = new Audio('/resources/qte_warn.wav');
-var SOUND_QTE_FAIL = new Audio('/resources/qte_fail.mp3');
+var qteCircle = document.getElementById("qte-circle");
+var qteCircleKey = qteCircle.querySelector(".button");
+var SOUND_QTE_WARN = new Audio("/resources/qte_warn.wav");
+var SOUND_QTE_FAIL = new Audio("/resources/qte_fail.mp3");
 var sunlight = new THREE.DirectionalLight(0xffe0c0, 1.0);
 var motionBlurPass = new THREE.UnrealBloomPass(
   new THREE.Vector2(window.innerWidth, window.innerHeight),
@@ -58,7 +58,7 @@ var motionBlurPass = new THREE.UnrealBloomPass(
 );
 var cutsceneActive = false;
 var audio = new Audio();
-var subtitle = document.getElementById('subtitle');
+var subtitle = document.getElementById("subtitle");
 var startTime;
 var isSlowMotion = false;
 var cameraRotation = { x: 0, y: 0 };
@@ -69,22 +69,22 @@ var music = new Audio();
 var currentTrack = 0;
 var tracks = [
   {
-    title: 'Track1',
-    src: 'resources/music/track1.mp3',
+    title: "Track1",
+    src: "resources/music/track1.mp3",
   },
   {
-    title: 'Track2',
-    src: 'resources/music/track2.mp3',
+    title: "Track2",
+    src: "resources/music/track2.mp3",
   },
   {
-    title: 'Track3',
-    src: 'resources/music/track3.mp3',
+    title: "Track3",
+    src: "resources/music/track3.mp3",
   },
 ];
 var choices = [
-  { text: 'Option 1', result: 'outcome1' },
-  { text: 'Option 2', result: 'outcome2' },
-  { text: 'Option 3', result: 'outcome3' },
+  { text: "Option 1", result: "outcome1" },
+  { text: "Option 2", result: "outcome2" },
+  { text: "Option 3", result: "outcome3" },
 ];
 var choiceStartTime;
 var choiceDuration = 10000; // 10 seconds
@@ -92,9 +92,25 @@ let target = new THREE.Vector3();
 let mouse = new THREE.Vector2();
 let mouseSensitivity = 0.1;
 let interpolationFactor = 0.1;
+var yaw = 0,
+  pitch = 0;
+var sensitivity = 0.01;
+var qteTimer = document.getElementById("qte-timer");
+var qteTimerTrack = document.getElementById("qte-timer-track");
+var qteTimerFill = document.getElementById("qte-timer-fill");
+var speed = 0.75;
+var skyColor = 0x212325;
+var isInGamePlaying = false;
+
+// Set up the bloom
+motionBlurPass.exposure = 2;
+motionBlurPass.bloomThreshold = 0;
+motionBlurPass.bloomStrength = 2;
+motionBlurPass.bloomRadius = 1;
 
 // Initialize the renderer
 renderer.setSize(window.innerWidth, window.innerHeight);
+renderer.toneMapping = THREE.ReinhardToneMapping;
 
 // Initialize the camera
 camera.position.y = 10;
@@ -116,16 +132,20 @@ characters.forEach((character, index) => {
     characterMeshes.push(mesh);
     scene.add(mesh);
 
-    console.log(index, ': ', playerModel[index]);
+    console.log(index, ": ", playerModel[index]);
   });
 });
 
 // Add the map
 var mapLoader = new THREE.GLTFLoader();
-mapLoader.load('resources/map/model.glb', function (geometry) {
+mapLoader.load("resources/maps/apocalyptic_city/scene.gltf", function (geometry) {
   mapModel = geometry.scene;
   mapModel.receiveShadow = true;
   mapModel.castShadow = true;
+  mapModel.position.y = -10;
+  mapModel.scale.x = 0.5;
+  mapModel.scale.y = 0.5;
+  mapModel.scale.z = 0.5;
   // mapModel.add(new THREE.Box3Helper(mapModel.geometry.boundingBox));
   scene.add(mapModel);
 });
@@ -140,73 +160,106 @@ sunlight.shadow.camera.far = 500;
 scene.add(sunlight);
 
 // Add the fog
-scene.fog = new THREE.FogExp2(0x004080, 0.002);
+scene.background = skyColor;
+scene.fog = new THREE.FogExp2(skyColor, 0.01);
 
 // Add the event listeners
-document.addEventListener('keydown', onKeyDown);
-document.addEventListener('keyup', onKeyUp);
-document.addEventListener('keydown', checkButtonPress);
-document.addEventListener('mousedown', onMouseDown, false);
-document.addEventListener('mousemove', onMouseMove, false);
-document.addEventListener('pointerlockchange', onPointerLockChange, false);
-document.addEventListener('pointerlockerror', onPointerLockError, false);
+document.addEventListener("keydown", onKeyDown);
+document.addEventListener("keyup", onKeyUp);
+document.addEventListener("keydown", checkButtonPress);
+viewport.addEventListener("mousedown", onMouseDown, false);
+document.addEventListener("mousemove", onMouseMove, false);
+document.addEventListener("pointerlockchange", onPointerLockChange, false);
+document.addEventListener("pointerlockerror", onPointerLockError, false);
 
 // Add the render loop
 function render() {
   requestAnimationFrame(render);
+
   var delta = clock.getDelta();
   renderer.render(scene, camera);
   composer.render(delta);
-
-  // Use lerp() to interpolate between the current and target position
-  camera.position.lerp(target, interpolationFactor);
-  camera.lookAt(target);
-
-  // Update the camera rotation based on the mouse movement
-  playerModel[currentCharacterIndex].rotation.y += camera.rotation.y;
-
-  console.log(camera.rotation.x, camera.rotation.y, camera.rotation.z);
-
-  // Update the player position based on the current movement
-  if (document.pointerLockElement === viewport) {
-    playerModel[currentCharacterIndex].translateX(playerMovement.x * speed);
-    playerModel[currentCharacterIndex].translateZ(playerMovement.z * speed);
-    camera.translateX(playerMovement.x * speed);
-    camera.translateZ(playerMovement.z * speed);
-    playerMovement.set(0, 0, 0);
+  if (!isInGamePlaying) {
+    return;
   }
 
+  // Update the player position based on the current movement
+  if (document.pointerLockElement !== viewport) {
+    return;
+  }
+  camera.quaternion.setFromEuler(new THREE.Euler(pitch, yaw, 0, "YXZ"));
+  playerModel[currentCharacterIndex].translateX(playerMovement.x * speed);
+  playerModel[currentCharacterIndex].translateZ(playerMovement.z * speed);
+  camera.translateX(playerMovement.x * speed);
+  camera.translateZ(playerMovement.z * speed);
+  playerMovement.set(0, 0, 0);
+
   // Update the camera position to follow the player
-  // camera.position.x = playerModel[currentCharacterIndex].position.x;
-  // camera.position.y = playerModel[currentCharacterIndex].position.y + 2;
-  // camera.position.z = playerModel[currentCharacterIndex].position.z - 5;
+  camera.position.x = playerModel[currentCharacterIndex].position.x;
+  camera.position.y = playerModel[currentCharacterIndex].position.y + 2;
+  camera.position.z = playerModel[currentCharacterIndex].position.z - 5;
 }
 render();
 
 // Add the QTE functions
-function startQTE(x, y) {
+var timeoutId, intervalId, timer = 0;
+
+function startQTE(type, x, y, isButtonMash, duration) {
   if (!QTEActive) {
     QTEActive = true;
     currentButton = 0;
     qteCircleKey.textContent = buttonSequence[currentButton];
-    qteCircle.classList.add('visible');
+    qteCircle.classList.add("visible");
+    qteCircle.classList.add("warning");
+    qteCircle.style.backgroundImage = 'url(resources/qte_' + type + '.png)';
     qteCircle.style.left = x;
     qteCircle.style.top = y;
     SOUND_QTE_WARN.currentTime = 0;
     SOUND_QTE_WARN.play();
-    timeoutId = setTimeout(function () {
-      if (QTEActive) {
-        qteCircle.classList.add('failed');
-        SOUND_QTE_FAIL.currentTime = 0;
-        SOUND_QTE_FAIL.play();
-        setTimeout(function () {
-          qteCircle.classList.remove('visible');
-          qteCircle.classList.remove('failed');
-        }, 1000);
-        QTEActive = false;
-        // failure action here
+
+    // Show warning circle and play sound
+    setTimeout(function () {
+      qteCircle.classList.remove("warning");
+
+      qteTimerFill.setAttribute('stroke-dasharray', 100);
+      timer = 3000;
+      intervalId = setInterval(() => {
+        if (timer >= 10) {
+          timer -= 10;
+          let progress = (timer / 3000) * 100;
+          qteTimerFill.setAttribute('stroke-dashoffset', (100 - (progress / 100) * 100));
+        } else {
+          clearInterval(intervalId);
+        }
+      }, 10);
+
+      // Start QTE
+      if (isButtonMash) {
+        var endTime = Date.now() + duration;
+        timeoutId = setInterval(function () {
+          if (QTEActive && Date.now() >= endTime) {
+            qteCircle.classList.remove("visible");
+            clearInterval(timeoutId);
+            QTEActive = false;
+            // success action here
+          }
+        }, 50);
+      } else {
+        timeoutId = setTimeout(function () {
+          if (QTEActive) {
+            qteCircle.classList.add("failed");
+            SOUND_QTE_FAIL.currentTime = 0;
+            SOUND_QTE_FAIL.play();
+            setTimeout(function () {
+              qteCircle.classList.remove("visible");
+              qteCircle.classList.remove("failed");
+            }, 1000);
+            QTEActive = false;
+            // failure action here
+          }
+        }, 3000);
       }
-    }, 3000);
+    }, 1000);
   }
 }
 
@@ -215,10 +268,11 @@ function checkButtonPress(event) {
     currentButton++;
     if (currentButton === buttonSequence.length) {
       clearTimeout(timeoutId);
-      qteCircle.classList.add('success');
+      clearInterval(intervalId);
+      qteCircle.classList.add("success");
       setTimeout(function () {
-        qteCircle.classList.remove('visible');
-        qteCircle.classList.remove('success');
+        qteCircle.classList.remove("visible");
+        qteCircle.classList.remove("success");
       }, 1000);
       QTEActive = false;
       // success action here
@@ -226,20 +280,21 @@ function checkButtonPress(event) {
       qteCircleKey.textContent = buttonSequence[currentButton];
       SOUND_QTE_WARN.currentTime = 0;
       SOUND_QTE_WARN.play();
-      qteCircle.classList.add('active');
+      qteCircle.classList.add("active");
       setTimeout(function () {
-        qteCircle.classList.remove('active');
+        qteCircle.classList.remove("active");
       }, 100);
     }
   } else {
-    if (qteCircle.classList.contains('visible')) {
+    if (qteCircle.classList.contains("visible")) {
       clearTimeout(timeoutId);
-      qteCircle.classList.add('failed');
+      clearInterval(intervalId);
+      qteCircle.classList.add("failed");
       SOUND_QTE_FAIL.currentTime = 0;
       SOUND_QTE_FAIL.play();
       setTimeout(function () {
-        qteCircle.classList.remove('visible');
-        qteCircle.classList.remove('failed');
+        qteCircle.classList.remove("visible");
+        qteCircle.classList.remove("failed");
       }, 1000);
       QTEActive = false;
       // failure action here
@@ -293,12 +348,8 @@ function switchCharacter(index) {
     var point = easing.getPoint(progress);
 
     // Update the camera's position and rotation based on the progress value
-    camera.position.x =
-      startPosition.x + (endPosition.x - startPosition.x) * point.x;
-    camera.position.y =
-      startPosition.y + (endPosition.y - startPosition.y) * point.y;
-    camera.position.z =
-      startPosition.z + (endPosition.z - startPosition.z) * point.z;
+    camera.position.x += (yaw - camera.position.x) * 0.05;
+    camera.position.y += (-pitch - camera.position.y) * 0.05;
 
     camera.lookAt(characterMeshes[index].position);
 
@@ -310,19 +361,19 @@ function switchCharacter(index) {
 }
 
 function showCharacterInfo(data) {
-  var hudInfo = document.getElementById('hud-info');
-  var characterName = hudInfo.querySelector('.character');
-  var inGameTime = hudInfo.querySelector('.time');
-  var inGameProgress = hudInfo.querySelector('.progress');
-  hudInfo.classList.add('visible');
+  var hudInfo = document.getElementById("hud-info");
+  var characterName = hudInfo.querySelector(".character");
+  var inGameTime = hudInfo.querySelector(".time");
+  var inGameProgress = hudInfo.querySelector(".progress");
+  hudInfo.classList.add("visible");
   characterName.textContent = data.name;
-  inGameTime.textContent = new Date().toLocaleTimeString('en-US', {
-    hour: 'numeric',
-    minute: 'numeric',
+  inGameTime.textContent = new Date().toLocaleTimeString("en-US", {
+    hour: "numeric",
+    minute: "numeric",
     hour12: true,
   });
   setTimeout(() => {
-    hudInfo.classList.remove('visible');
+    hudInfo.classList.remove("visible");
   }, 3000);
 }
 
@@ -342,9 +393,9 @@ function slowMotion(duration) {
 function showNotifier(message, type) {
   notificationText.textContent = message;
   notification.classList.add(type);
-  notification.classList.add('visible');
+  notification.classList.add("visible");
   setTimeout(function () {
-    notification.classList.remove('visible');
+    notification.classList.remove("visible");
     notification.classList.remove(type);
   }, 2000);
 }
@@ -355,7 +406,7 @@ function playAudioWithSubtitle(audioSrc, text) {
   subtitle.textContent = text;
   audio.play();
   audio.onended = () => {
-    subtitle.textContent = ''; // clear the subtitle text
+    subtitle.textContent = ""; // clear the subtitle text
   };
 }
 
@@ -364,8 +415,8 @@ function startCutscene(cutscene) {
   if (!cutsceneActive) {
     cutsceneActive = true;
     // Disable player controls
-    document.removeEventListener('keydown', playerControls);
-    document.removeEventListener('mousemove', playerControls);
+    document.removeEventListener("keydown", playerControls);
+    document.removeEventListener("mousemove", playerControls);
     // Move camera to cutscene start position
     camera.position.set(
       cutscene.startPosition.x,
@@ -377,8 +428,8 @@ function startCutscene(cutscene) {
     // After cutscene ends
     setTimeout(function () {
       // Enable player controls
-      document.addEventListener('keydown', playerControls);
-      document.addEventListener('mousemove', playerControls);
+      document.addEventListener("keydown", playerControls);
+      document.addEventListener("mousemove", playerControls);
       // Move camera back to player position
       camera.position.set(
         player.position.x,
@@ -392,15 +443,15 @@ function startCutscene(cutscene) {
 
 // Add the pause and main menu functions
 function togglePauseMenu() {
-  pauseMenu.classList.toggle('visible');
-  if (pauseMenu.classList.contains('visible')) {
+  pauseMenu.classList.toggle("visible");
+  if (pauseMenu.classList.contains("visible")) {
     // pause the game
   } else {
     // resume the game
   }
 }
 function showMainMenu() {
-  mainScreen.classList.add('visible');
+  mainScreen.classList.add("visible");
 }
 
 // Add the freeze and unfreeze function
@@ -408,15 +459,15 @@ function toggleFreeze() {
   if (gameFrozen) {
     gameFrozen = false;
     // Enable player controls
-    document.addEventListener('keydown', playerControls);
-    document.addEventListener('mousemove', playerControls);
+    document.addEventListener("keydown", playerControls);
+    document.addEventListener("mousemove", playerControls);
     // Start game loop
     requestId = requestAnimationFrame(gameLoop);
   } else {
     gameFrozen = true;
     // Disable player controls
-    document.removeEventListener('keydown', playerControls);
-    document.removeEventListener('mousemove', playerControls);
+    document.removeEventListener("keydown", playerControls);
+    document.removeEventListener("mousemove", playerControls);
     // Stop game loop
     cancelAnimationFrame(requestId);
   }
@@ -448,11 +499,11 @@ function updateInventoryDisplay() {
   if (!inventory[currentCharacterIndex]) {
     inventory[currentCharacterIndex] = [];
   }
-  var inventoryDiv = document.getElementById('inventory');
-  inventoryDiv.innerHTML = '';
+  var inventoryDiv = document.getElementById("inventory");
+  inventoryDiv.innerHTML = "";
   for (var i = 0; i < inventory[currentCharacterIndex].length; i++) {
-    var itemDiv = document.createElement('div');
-    itemDiv.classList.add('inventory-item');
+    var itemDiv = document.createElement("div");
+    itemDiv.classList.add("inventory-item");
     itemDiv.innerHTML = inventory[currentCharacterIndex][i];
     inventoryDiv.appendChild(itemDiv);
   }
@@ -513,32 +564,32 @@ function cubicBezier(x1, y1, x2, y2) {
 
 function displayChoices() {
   // Get the timer progress bar
-  var choiceTimerProgress = document.getElementById('timer-progress-bar');
+  var choiceTimerProgress = document.getElementById("timer-progress-bar");
 
   // Set up choice timer
   var timer = choiceDuration;
   var intervalId = setInterval(() => {
     timer -= 10;
     var progress = timer / choiceDuration;
-    choiceTimerProgress.style.setProperty('--progress', progress);
+    choiceTimerProgress.style.setProperty("--progress", progress);
     if (timer <= 1) {
-      handleChoice('silent');
+      handleChoice("silent");
       clearInterval(intervalId);
     }
   }, 10);
 
   // Clear any existing choices
-  var choiceContainer = document.getElementById('choice-container');
-  choiceContainer.classList.add('visible');
+  var choiceContainer = document.getElementById("choice-container");
+  choiceContainer.classList.add("visible");
 
-  var choiceButtons = choiceContainer.querySelector('.choices');
-  choiceButtons.innerHTML = '';
+  var choiceButtons = choiceContainer.querySelector(".choices");
+  choiceButtons.innerHTML = "";
 
   // Add the new choices to the container
   choices.forEach((choice) => {
-    var button = document.createElement('button');
+    var button = document.createElement("button");
     button.textContent = choice.text;
-    button.addEventListener('click', function () {
+    button.addEventListener("click", function () {
       handleChoice(choice.result);
       clearInterval(intervalId);
     });
@@ -548,17 +599,46 @@ function displayChoices() {
 
 function handleChoice(result) {
   // Hide the choice menu
-  var choiceContainer = document.getElementById('choice-container');
-  choiceContainer.classList.remove('visible');
+  var choiceContainer = document.getElementById("choice-container");
+  choiceContainer.classList.remove("visible");
 
   // Do something based on the outcome of the choice
-  if (result === 'outcome1') {
+  if (result === "outcome1") {
     // Outcome 1
-  } else if (result === 'outcome2') {
+  } else if (result === "outcome2") {
     // Outcome 2
-  } else if (result === 'outcome3') {
+  } else if (result === "outcome3") {
     // Outcome 3
   }
+}
+
+function flyTo(position, rotation, duration) {
+  var startPosition = camera.position.clone();
+  var startRotation = camera.rotation.clone();
+  var endPosition = position;
+  var endRotation = rotation;
+  var startTime = performance.now();
+
+  function easeInOutQuad(t) {
+    return t < 0.5 ? 2 * t * t : -1 + (4 - 2 * t) * t;
+  }
+
+  function update(time) {
+    var elapsed = (time - startTime) / duration;
+    elapsed = Math.min(1, elapsed);
+    var eased = easeInOutQuad(elapsed);
+    camera.position.x = startPosition.x + (endPosition.x - startPosition.x) * eased;
+    camera.position.y = startPosition.y + (endPosition.y - startPosition.y) * eased;
+    camera.position.z = startPosition.z + (endPosition.z - startPosition.z) * eased;
+    camera.rotation.x = startRotation.x + (endRotation.x - startRotation.x) * eased;
+    camera.rotation.y = startRotation.y + (endRotation.y - startRotation.y) * eased;
+    camera.rotation.z = startRotation.z + (endRotation.z - startRotation.z) * eased;
+    if (elapsed < 1) {
+      requestAnimationFrame(update);
+    }
+  }
+
+  requestAnimationFrame(update);
 }
 
 function onMouseDown() {
@@ -568,12 +648,9 @@ function onMouseDown() {
 function onMouseMove(event) {
   if (document.pointerLockElement === viewport) {
     // Update the mouse position
-    mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
-    mouse.y = - (event.clientY / window.innerHeight) * 2 + 1;
-
-    // Calculate the target position based on the mouse position
-    target.x = - mouse.x * mouseSensitivity;
-    target.y = mouse.y * mouseSensitivity;
+    yaw -= event.movementX * sensitivity;
+    pitch -= event.movementY * sensitivity;
+    pitch = Math.min(Math.max(pitch, -Math.PI / 2), Math.PI / 2);
   }
 }
 
@@ -594,23 +671,23 @@ function onPointerLockError() {
 // Create an onKeyDown function to update the player movement and camera rotation when a key is pressed
 function onKeyDown(event) {
   switch (event.key) {
-    case 'w':
-    case 'ArrowUp':
+    case "w":
+    case "ArrowUp":
       playerMovement.z = -1;
       break;
-    case 's':
-    case 'ArrowDown':
+    case "s":
+    case "ArrowDown":
       playerMovement.z = 1;
       break;
-    case 'a':
-    case 'ArrowLeft':
+    case "a":
+    case "ArrowLeft":
       playerMovement.x = -1;
       break;
-    case 'd':
-    case 'ArrowRight':
+    case "d":
+    case "ArrowRight":
       playerMovement.x = 1;
       break;
-    case ' ':
+    case " ":
       playerMovement.y = 1;
       break;
   }
@@ -619,20 +696,27 @@ function onKeyDown(event) {
 // Create an onKeyUp function to update the player movement and camera rotation when a key is released
 function onKeyUp(event) {
   switch (event.key) {
-    case 'w':
-    case 'ArrowUp':
-    case 's':
-    case 'ArrowDown':
+    case "w":
+    case "ArrowUp":
+    case "s":
+    case "ArrowDown":
       playerMovement.z = 0;
       break;
-    case 'a':
-    case 'ArrowLeft':
-    case 'd':
-    case 'ArrowRight':
+    case "a":
+    case "ArrowLeft":
+    case "d":
+    case "ArrowRight":
       playerMovement.x = 0;
       break;
-    case ' ':
+    case " ":
       playerMovement.y = 0;
       break;
   }
 }
+
+window.addEventListener('resize', function() {
+  camera.aspect = window.innerWidth / window.innerHeight;
+  camera.updateProjectionMatrix();
+  renderer.setSize(window.innerWidth, window.innerHeight);
+});
+

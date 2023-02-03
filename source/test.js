@@ -14,4 +14,6 @@ document.addEventListener('keydown', (evt) => {
   }
 });
 
-document.getElementById('qte-button').addEventListener('click', startQTE);
+document.addEventListener('dblclick', () => {
+  startQTE('attack', '50%', '75%', false, 1000);
+});

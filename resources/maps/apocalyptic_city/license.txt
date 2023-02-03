@@ -1,0 +1,11 @@
+Model Information:
+* title:	Apocalyptic City
+* source:	https://sketchfab.com/3d-models/apocalyptic-city-a0c8f318ed6f4075a97c2e55b1272495
+* author:	ruslans3d (https://sketchfab.com/ruslans3d)
+
+Model License:
+* license type:	CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)
+* requirements:	Author must be credited. Commercial use is allowed.
+
+If you use this 3D model in your project be sure to copy paste this credit wherever you share it:
+This work is based on "Apocalyptic City" (https://sketchfab.com/3d-models/apocalyptic-city-a0c8f318ed6f4075a97c2e55b1272495) by ruslans3d (https://sketchfab.com/ruslans3d) licensed under CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)

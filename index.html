@@ -8,13 +8,31 @@
   <link rel="stylesheet" href="source/index.css">
   <link rel="stylesheet" href="source/choices.css">
   <link rel="stylesheet" href="source/qte.css">
+  <link rel="stylesheet" href="style/main.css">
+  <link rel="stylesheet" href="style/main_menu.css">
+  <link rel="stylesheet" href="style/episodes_menu.css">
+  <link rel="stylesheet" href="style/settings_menu.css">
+  <link rel="stylesheet" href="style/exit_game.css">
+  <script defer src="js/game_ui.js"></script>
+  <script defer src="js/main_menu.js"></script>
+  <script defer src="js/episodes_menu.js"></script>
+  <script defer src="js/settings_menu.js"></script>
+  <script defer src="js/exit_game.js"></script>
+
+  <!-- Localization -->
+  <script src="js/l10n.js"></script>
+  <meta name="defaultLanguage" content="en-US">
+  <meta name="availableLanguages" content="af, ar, da, de, el, en-US, es, fi, fr, ga, he, hi, hu, id, ja, ko, ku, lv, nl, no, pt, zh">
+  <link rel="localization" href="locales/main.{locale}.properties">
 </head>
 <body>
   <canvas id="viewport"></canvas>
   <div id="gui">
-    <div id="qte-button"></div>
     <div id="qte-circle">
-      <i class="icon"></i>
+      <svg id="qte-timer" viewBox="0 0 36 36">
+        <circle id="qte-timer-track" cx="18" cy="18" r="15" fill="none" stroke="#404040" stroke-width="6" />
+        <circle id="qte-timer-fill" cx="18" cy="18" r="15" fill="none" stroke="#e0e0e0" stroke-width="6" />
+      </svg>
       <div class="button"></div>
     </div>
     <div id="notification">
@@ -29,6 +47,88 @@
     <div id="choice-container">
       <div class="choices"></div>
       <div id="timer-progress-bar"></div>
+    </div>
+
+    <!-- User Interface -->
+    <div id="main-menu" class="game-ui">
+      <menu class="main-menu-options">
+        <button id="main-menu-play-button" data-l10n-id="mainMenu-play">Play</button>
+        <button id="main-menu-cosmetics-button" data-l10n-id="mainMenu-cosmetics">Cosmetics</button>
+        <button id="main-menu-extras-button" data-l10n-id="mainMenu-extras" class="attention">Extras</button>
+        <button id="main-menu-trophies-button" data-l10n-id="mainMenu-trophies">Achievements</button>
+        <button id="main-menu-settings-button" data-l10n-id="mainMenu-settings">Settings</button>
+        <button id="main-menu-exit-button" data-l10n-id="mainMenu-exit">Exit Game</button>
+      </menu>
+    </div>
+
+    <div id="episodes-menu" class="game-ui">
+      <section class="episodes-menu-preview">
+        <div id="episodes-menu-background"></div>
+        <button id="episodes-menu-back-button" data-l10n-id="goBack">Go Back</button>
+        <div id="episodes-menu-title">The Daycare</div>
+        <div id="episodes-menu-detail">You will be a boomer</div>
+        <button id="episodes-menu-play-button" data-l10n-id="episodes-play">Play Episode 1</button>
+      </section>
+      <ul id="episodes-menu-tabs">
+        <li>
+          <img src="" alt="">
+          <div class="text-holder">
+            <p class="episode">Episode 1</p>
+            <h1 class="title">Episode Title</h1>
+          </div>
+        </li>
+        <li>
+          <img src="" alt="">
+          <div class="text-holder">
+            <p class="episode">Episode 2</p>
+            <h1 class="title">Episode Title</h1>
+          </div>
+        </li>
+        <li>
+          <img src="" alt="">
+          <div class="text-holder">
+            <p class="episode">Episode 3</p>
+            <h1 class="title">Episode Title</h1>
+          </div>
+        </li>
+        <li>
+          <img src="" alt="">
+          <div class="text-holder">
+            <p class="episode">Episode 4</p>
+            <h1 class="title">Episode Title</h1>
+          </div>
+        </li>
+        <li>
+          <img src="" alt="">
+          <div class="text-holder">
+            <p class="episode">Episode 5</p>
+            <h1 class="title">Episode Title</h1>
+          </div>
+        </li>
+      </ul>
+    </div>
+
+    <div id="settings-menu" class="game-ui">
+      <menu class="settings-menu-options">
+        <button id="settings-menu-back-button" data-l10n-id="goBack">Go Back</button>
+        <button id="settings-menu-audio-button" data-l10n-id="settings-audio">Audio &amp; Music</button>
+        <button id="settings-menu-vsuals-button" data-l10n-id="settings-vsuals">Visuals &amp; Graphics</button>
+        <button id="settings-menu-controls-button" data-l10n-id="settings-controls">Controls</button>
+        <button id="settings-menu-accessibility-button" data-l10n-id="settings-accessibility">Accessibility</button>
+        <button id="settings-menu-credits-button" data-l10n-id="settings-credits">Credits</button>
+      </menu>
+    </div>
+
+    <div id="exit-game" class="game-ui">
+      <div class="exit-game-dialog">
+        <section>
+          <h1 data-l10n-id="exitGame-title">Exit Game</h1>
+          <p data-l10n-id="exitGame-desc">Are you sure you want to exit?</p>
+        </section>
+        <menu>
+          <button id="exit-game-cancel-button" data-l10n-id="exitGame-cancel">Nope</button>
+          <button id="exit-game-confirm-button" data-l10n-id="exitGame-confirm">...Yeah?</button>
+      </div>
     </div>
   </div>
   <script src="library/three.js"></script>
