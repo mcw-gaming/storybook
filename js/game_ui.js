@@ -15,5 +15,10 @@
     }
   }
 
+  var buttons = document.querySelectorAll('.game-ui button, .game-ui .button');
+  buttons.forEach((button) => {
+    button.addEventListener('click', () => {});
+  });
+
   exports.openInGameUi = openInGameUi;
 })(window);
