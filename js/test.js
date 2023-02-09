@@ -15,5 +15,5 @@ document.addEventListener('keydown', (evt) => {
 });
 
 document.addEventListener('dblclick', () => {
-  startQTE('attack', '50%', '75%', false, 1000);
+  startQTE('attack', '50%', '75%', { duration: parseInt(Math.random() * 10000) });
 });
